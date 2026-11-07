@@ -20,7 +20,7 @@
       withSuccessHandler: function (f) { return runner(f, ng); },
       withFailureHandler: function (f) { return runner(ok, f); }
     };
-    ['getPublic', 'issueTicket', 'cancelTicket', 'staffGet', 'staffSet', 'staffIssue', 'staffSetOpen', 'staffSetDelay'].forEach(function (fn) {
+    ['getPublic', 'issueTicket', 'cancelTicket', 'staffGet', 'staffSet', 'staffIssue', 'staffSetOpen', 'staffSetDelay', 'staffPractice'].forEach(function (fn) {
       o[fn] = function () { call(fn, Array.prototype.slice.call(arguments), ok, ng); };
     });
     return o;
@@ -162,7 +162,7 @@ var BOOT = (function () {
   var pages = { staff: 1, call: 1, poster: 1 };
   var titles = { staff: '整理券（スタッフ）', call: '呼び出し', poster: '整理券ポスター' };
   if (titles[p]) document.title = "呪信" + ' ' + titles[p];
-  return { page: pages[p] ? p : 'ticket', url: location.origin + location.pathname, name: "呪信", subtitle: "旧校舎・脳科学研究室　被験者受付", v: "1.3.1" };
+  return { page: pages[p] ? p : 'ticket', url: location.origin + location.pathname, name: "呪信", subtitle: "旧校舎・脳科学研究室　被験者受付", v: "1.4.0" };
 })();
 var $app = document.getElementById('app');
 
@@ -319,6 +319,7 @@ function renderTicket() {
   }
   h += versionBanner(d.v);
   if (T.loadErr) h += '<p class="err">通信できませんでした（' + esc(T.loadErr) + '）。表示は少し前のものです。</p>';
+  if (d.practice) h += '<div class="card notice center"><b>ただいま練習中です</b>（本番の整理券ではありません）</div>';
   if (d.delay) h += '<div class="card delay"><b>⚠ ただいま 約' + d.delay + '分 遅れています</b><br><span>整理券の時刻より、ご案内が約' + d.delay + '分あとになります。</span></div>';
   if (d.notice) h += '<div class="card notice">' + esc(d.notice) + '</div>';
 
@@ -422,6 +423,7 @@ function renderStaff() {
   var d = A.data;
   if (!d) { $app.innerHTML = '<p class="muted center">読み込み中…</p>'; return; }
   var h = '<h1>👻 スタッフ<small>' + esc(d.now) + ' 現在</small></h1>' + versionBanner(d.v);
+  if (d.practice) h += '<div class="card notice"><b>練習中</b>：今は練習用の枠です。終わったら下の「本番の枠に戻す」を押してください（日付が変わると自動で戻ります）。</div>';
   if (A.err) h += '<p class="err">通信できませんでした：' + esc(A.err) + '</p>';
 
   var waiting = d.rows.filter(function (r) { return r.status === '発券済' && !r.expired; });
@@ -491,6 +493,12 @@ function renderStaff() {
   });
   if (!list.length) h += '<p class="muted center">表示する枠がありません</p>';
   h += '</div>';
+
+  h += '<div class="card"><b>練習</b><p class="muted" style="margin:4px 0 8px">営業時間外でも QR から発券を試せるように、今から2時間ぶんの枠を作ります。どちらのボタンも、出ている整理券はすべて消えます。</p>' +
+    (d.practice
+      ? '<button onclick="staffAct(\'staffPractice\',[false],\'本番の枠（設定の時刻）に戻しますか？練習の整理券はすべて消えます。\')">本番の枠に戻す</button>'
+      : '<button onclick="staffAct(\'staffPractice\',[true],\'今から2時間の練習用の枠を作りますか？今の枠と整理券はすべて消えます（本番の日にはやらないでください）。\')">練習用の枠を作る</button>') +
+    '</div>';
 
   h += '<p class="muted">ほかのページ：<a href="' + esc(BOOT.url) + '" target="_blank">お客さん用</a>　<a href="' + esc(BOOT.url) + '?p=call" target="_blank">呼び出し画面</a>　<a href="' + esc(BOOT.url) + '?p=poster" target="_blank">掲示用ポスター</a></p>';
   h += '<p class="muted"><a href="#" onclick="store.del(\'obake-pin\');A.pin=\'\';renderLogin(\'\');return false">この端末からログアウト</a></p>';
