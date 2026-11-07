@@ -166,7 +166,7 @@ var BOOT = (function () {
   var pages = { staff: 1, call: 1, poster: 1 };
   var titles = { staff: '整理券（スタッフ）', call: '呼び出し', poster: '整理券ポスター' };
   if (titles[p]) document.title = "呪信" + ' ' + titles[p];
-  return { page: pages[p] ? p : 'ticket', url: location.origin + location.pathname, name: "呪信", subtitle: "旧校舎・脳科学研究室　被験者受付", v: "1.4.0" };
+  return { page: pages[p] ? p : 'ticket', url: location.origin + location.pathname, name: "呪信", subtitle: "旧校舎・脳科学研究室　被験者受付", v: "1.5.0" };
 })();
 var $app = document.getElementById('app');
 
