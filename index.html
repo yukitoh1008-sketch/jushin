@@ -58,6 +58,10 @@
   .delay span { font-size: 13px; }
   @keyframes alarm { 0%, 100% { box-shadow: 0 0 0 0 #e0213f00; } 50% { box-shadow: 0 0 14px 2px #e0213f88; } }
   .ticket .late { margin-top: 6px; font-size: 14px; color: #ffb3bf; }
+  #pv { max-width: 560px; margin: -36px auto 0; padding: 0 16px 48px; }
+  .pv { position: relative; border-color: #e0213f88; }
+  .pv .head { display: flex; justify-content: space-between; font-size: 11px; color: var(--red); border-bottom: 1px dashed #e0213f55; padding-bottom: 6px; margin-bottom: 10px; }
+  .pv video { display: block; width: 100%; aspect-ratio: 16 / 9; background: #000; border-radius: 8px; }
   .ticket .late b { color: #fff; font-size: 17px; }
   .call-delay { display: inline-block; margin-top: 2vh; padding: .6vh 2vw; border-radius: 99px; background: var(--red); color: #fff; font-weight: bold; font-size: 2.6vw; }
   .muted { color: var(--muted); font-size: 13px; }
@@ -353,6 +357,28 @@ function renderTicket() {
     '<div><span>ただいまご案内中</span><b>' + (d.serving ? esc(d.serving.time) + ' の回' : '―') + '</b></div>' +
     '<div><span>残りの整理券</span><b>' + d.remaining + ' 枠</b></div></div>';
   $app.innerHTML = h;
+  showPv(!!m);
+}
+
+// 告知映像：整理券を持っている人だけに見せる。画面は15秒ごとに作り直すので、
+// 再生が止まらないよう #app の外に1回だけ作って、出す／隠すだけにする
+var PV_URL = 'https://yukitoh1008-sketch.github.io/jushin/jushin_pv.mp4';
+function showPv(on) {
+  var box = document.getElementById('pv');
+  if (!on) {
+    if (box) { box.style.display = 'none'; var v0 = box.querySelector('video'); if (v0) v0.pause(); }
+    return;
+  }
+  if (!box) {
+    box = document.createElement('div');
+    box.id = 'pv';
+    box.innerHTML = '<div class="card pv scan"><div class="head mono"><span>ARCHIVE FOOTAGE</span><span>待ち時間に</span></div>' +
+      '<p style="margin:0 0 10px;font-weight:bold">『呪信』告知映像</p>' +
+      '<video controls playsinline preload="metadata" src="' + PV_URL + '#t=0.1"></video>' +
+      '<p class="muted" style="margin:8px 0 0">音が出ます。まわりに気をつけてご覧ください。</p></div>';
+    $app.parentNode.insertBefore(box, $app.nextSibling);
+  }
+  box.style.display = '';
 }
 
 function takeTicket() {
