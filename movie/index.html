@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="robots" content="noindex">
+<title>記録映像</title>
+<link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&display=swap" rel="stylesheet">
+<style>
+  * { box-sizing: border-box; }
+  html, body { margin: 0; height: 100%; background: #000; color: #d9e6e8; }
+  body { font-family: "Hiragino Sans", "Yu Gothic UI", "Meiryo", sans-serif; display: flex; flex-direction: column; align-items: center; justify-content: center; min-height: 100vh; padding: 16px; }
+  .mono { font-family: "Share Tech Mono", ui-monospace, Consolas, monospace; letter-spacing: .2em; }
+  .top { font-size: 11px; color: #35d0bf; opacity: .85; margin-bottom: 10px; text-align: center; }
+  .wrap { position: relative; width: 100%; max-width: 960px; }
+  video { display: block; width: 100%; aspect-ratio: 16 / 9; background: #000; }
+  .play { position: absolute; inset: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 12px; background: radial-gradient(ellipse at center, #0b2224 0%, #000 70%); border: 1px solid #35d0bf55; cursor: pointer; }
+  .play .btn { width: 76px; height: 76px; border-radius: 50%; border: 2px solid #e0213f; display: flex; align-items: center; justify-content: center; box-shadow: 0 0 18px #e0213f88; animation: pulse 1.6s ease-in-out infinite; }
+  .play .btn::after { content: ""; margin-left: 6px; border-style: solid; border-width: 14px 0 14px 22px; border-color: transparent transparent transparent #fff; }
+  .play .label { font-size: 13px; }
+  .play .rec { position: absolute; top: 10px; left: 12px; font-size: 12px; color: #e0213f; }
+  .note { margin-top: 12px; font-size: 12px; color: #7f9499; text-align: center; }
+  @keyframes pulse { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.06); } }
+  .play::after { content: ""; position: absolute; inset: 0; pointer-events: none; background: repeating-linear-gradient(0deg, #ffffff08 0 1px, transparent 1px 3px); }
+</style>
+</head>
+<body>
+  <div class="top mono">ARCHIVE FOOTAGE ── 記録映像</div>
+  <div class="wrap">
+    <video id="v" playsinline preload="metadata" src="movie.mp4#t=0.1"></video>
+    <div class="play" id="cover">
+      <div class="rec mono">● REC</div>
+      <div class="btn"></div>
+      <div class="label mono">タップして再生</div>
+    </div>
+  </div>
+  <div class="note">音が出ます。まわりに気をつけてご覧ください。</div>
+<script>
+  var v = document.getElementById('v');
+  var cover = document.getElementById('cover');
+  cover.addEventListener('click', function () {
+    cover.style.display = 'none';
+    v.controls = true;
+    v.play();
+  });
+</script>
+</body>
+</html>
